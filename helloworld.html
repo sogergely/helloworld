@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Goodbye World</title>
+  <style>
+    :root { --text: #e8eefc; --glow: #7dd3fc; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; margin: 0; overflow: hidden; }
+    body {
+      display: grid;
+      place-items: center;
+      font-family: system-ui, -apple-system, Segoe UI, sans-serif;
+      color: var(--text);
+      background: radial-gradient(ellipse at bottom, #0b1020 0%, #03060d 70%);
+    }
+    #sky, .aurora { position: fixed; inset: 0; }
+    #sky { z-index: 0; }
+    .aurora {
+      z-index: 1;
+      pointer-events: none;
+      background:
+        radial-gradient(60% 40% at 20% 70%, rgba(52,211,153,.18), transparent 60%),
+        radial-gradient(50% 35% at 75% 30%, rgba(96,165,250,.16), transparent 60%),
+        radial-gradient(45% 30% at 55% 80%, rgba(167,139,250,.14), transparent 60%);
+      filter: blur(18px);
+      animation: aurora 14s ease-in-out infinite alternate;
+    }
+    @keyframes aurora {
+      to { transform: translateY(-2%) scale(1.04); opacity: .9; }
+    }
+    main {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2.4rem 3rem;
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 20px;
+      background: rgba(6,10,20,.5);
+      backdrop-filter: blur(6px);
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(2.5rem, 8vw, 4.8rem);
+      background: linear-gradient(90deg, #bae6fd, #c4b5fd, #86efac);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      animation: shimmer 5s linear infinite;
+    }
+    @keyframes shimmer { to { background-position: 200% center; } }
+    p { margin: .7rem 0 0; color: rgba(232,238,252,.68); }
+  </style>
+</head>
+<body>
+  <canvas id="sky"></canvas>
+  <div class="aurora"></div>
+  <main aria-label="Goodbye World">
+    <h1>Goodbye, World</h1>
+    <p>Move your mouse across the night sky.</p>
+  </main>
+  <script>
+    const c = document.getElementById('sky'), ctx = c.getContext('2d');
+    let w, h, mx = 0, my = 0, tx = 0, ty = 0;
+    const stars = Array.from({length: 90}, () => ({
+      x: Math.random(), y: Math.random(),
+      r: Math.random() * 1.6 + 0.2, a: Math.random() * 0.6 + 0.25, d: Math.random() * 18 + 4
+    }));
+    function resize() { w = c.width = innerWidth; h = c.height = innerHeight; }
+    addEventListener('resize', resize); resize();
+    addEventListener('mousemove', e => { tx = (e.clientX / w - .5) * 2; ty = (e.clientY / h - .5) * 2; });
+    function draw() {
+      mx += (tx - mx) * .04; my += (ty - my) * .04;
+      ctx.clearRect(0, 0, w, h);
+      for (const s of stars) {
+        const x = s.x * w + mx * s.d, y = s.y * h + my * s.d;
+        ctx.beginPath(); ctx.arc(x, y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255,255,255,${s.a})`; ctx.fill();
+      }
+      requestAnimationFrame(draw);
+    }
+    draw();
+  </script>
+</body>
+</html>
